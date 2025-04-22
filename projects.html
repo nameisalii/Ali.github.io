@@ -1,0 +1,96 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Mukhammadzhon (ALI)</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="left-header">
+                <a href="index.html"><h2>Ali 💻 🇰🇬</h2></a>
+            </div>
+            <nav class="right-header">
+                <a href="https://drive.google.com/file/d/1iwHfNLFZ0_efRHeiikwrZGdbE_vp4wII/view?usp=share_link" target="_blank">Resume</a>
+                <a href="interests.html">Interests</a>
+                <a href="projects.html">Projects</a>
+                <a href="https://github.com/nameisalii" target="_blank">Github</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </header>
+
+        <section class="projects">
+            <h1>Projects</h1>
+            <div class="project-card">
+                <h2>Diamond</h2>
+                <p><strong>Machine Learning model with MSE 99%</strong></p>
+                <p>This model’s main point is to suggest the diamonds to Steve based on his preference and predict the price of the diamond.</p>
+                <p>It was built by: Python, Data Analysis and ML</p>
+                <img src="diamond-project.jpg" alt="Diamond Project Visualization">
+                <div class="project-links">
+                    <a href="https://github.com/nameisalii" target="_blank">Github</a>
+                    <a href="#" target="_blank">Website</a>
+                </div>
+            </div>
+            <div class="project-card">
+                <h2>Predict Podcast Listening Time</h2>
+                <p>I created a ML model that predicts the time of listening podcast using LightGBM and XGBoost on Kaggle and get 11.9 top 200.</p>
+                <img src="podcast-project.jpg" alt="Podcast Project Visualization">
+            </div>
+        </section>
+
+        <footer>
+            <nav>
+                <a href="https://drive.google.com/file/d/1iwHfNLFZ0_efRHeiikwrZGdbE_vp4wII/view?usp=share_link" target="_blank">Resume</a>
+                <a href="interests.html">Interests</a>
+                <a href="projects.html">Projects</a>
+                <a href="https://github.com/nameisalii" target="_blank">Github</a>
+                <a href="contact.html">Contact</a>
+                <a href="#" class="more">More</a>
+            </nav>
+            <p>© 2025 Mukhammadzhon (ALI)</p>
+        </footer>
+    </div>
+</body>
+</html>
